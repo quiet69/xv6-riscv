@@ -116,23 +116,6 @@ sys_procinfo(struct pinfo* param) // procinfo syscall definition
   return procinfo(param);
 }
 
-// uint64
-// sys_sched_statistics(void)
-// {
-//   int n;
-//   argint(0, &n);
-//   print_sched_statistics(n);
-//   return 0;
-// }
-
-// uint64
-// sys_sched_tickets(void){
-//   int n;
-//   argint(0, &n);
-//   print_sched_tickets(n);
-//   return 0;
-// }
-
 uint64
 sys_sched_statistics(void)
 {

@@ -516,46 +516,46 @@ scheduler(void)
         release(&process->lock);
       }
     }
+  }
     
   #elif defined(LOTTERY)
-int sum_of_tickets = 0;
-int lottery_tickets = 0;
-for (;;) {
+  int sum_of_tickets = 0;
+  int lottery_tickets = 0;
+  for (;;)
+  {
     intr_on();
     sum_of_tickets = 0;
-
-    // Calculate the total number of tickets
-    for (p = proc; p < &proc[NPROC]; p++) {
-        acquire(&p->lock);
-        if (p->state == RUNNABLE) {
-            sum_of_tickets += p->tickets;
-        }
+    for (p = proc; p < &proc[NPROC]; p++)
+    {
+      acquire(&p->lock);
+      if (p->state == RUNNABLE)
+      {
+        sum_of_tickets += p->tickets;
         release(&p->lock);
-    }
-
-    // Generate a random number between 0 and sum_of_tickets
-    lottery_tickets = rand(sum_of_tickets);
-    int golden_ticket = lottery_tickets;
-
-    // Find the process with the winning ticket
-    for (p = proc; p < &proc[NPROC]; p++) {
+      }
+      lottery_tickets = rand(sum_of_tickets);
+      int val = lottery_tickets;
+      for (p = proc; p < &proc[NPROC]; p++)
+      {
         acquire(&p->lock);
-        if (p->state == RUNNABLE) {
-            golden_ticket -= p->tickets;
-            if (golden_ticket <= 0) {
-                p->state = RUNNING;
-                p->ticks += 1;
-                c->proc = p;
-                swtch(&c->context, &p->context);
-                c->proc = 0;
-                release(&p->lock);
-                break;
-            }
+        if (p->state == RUNNABLE)
+        {
+          val -= p->tickets;
+          if (val <= 0)
+          {
+            p->state = RUNNING;
+            p->ticks += 1;
+            c->proc = p;
+            swtch(&c->context, &p->context);
+            c->proc = 0;
+            release(&p->lock);
+            break;
+          }
         }
-        release(&p->lock);
+      }
+      release(&p->lock);
     }
-}
-
+  }
   #else
   for(;;){
     // Avoid deadlock by ensuring that devices can interrupt.
