@@ -517,7 +517,6 @@ scheduler(void)
       }
     }
   }
-    
   #elif defined(LOTTERY)
   int sum_of_tickets = 0;
   int lottery_tickets = 0;
@@ -531,31 +530,32 @@ scheduler(void)
       if (p->state == RUNNABLE)
       {
         sum_of_tickets += p->tickets;
-        release(&p->lock);
       }
-      lottery_tickets = rand(sum_of_tickets);
-      int val = lottery_tickets;
-      for (p = proc; p < &proc[NPROC]; p++)
+      release(&p->lock);
+    }
+    lottery_tickets = rand(sum_of_tickets);
+    int val = lottery_tickets;
+    for (p = proc; p < &proc[NPROC]; p++)
+    {
+      acquire(&p->lock);
+      if (p->state == RUNNABLE)
       {
-        acquire(&p->lock);
-        if (p->state == RUNNABLE)
+        val -= p->tickets;
+        if (val <= 0)
         {
-          val -= p->tickets;
-          if (val <= 0)
-          {
-            p->state = RUNNING;
-            p->ticks += 1;
-            c->proc = p;
-            swtch(&c->context, &p->context);
-            c->proc = 0;
-            release(&p->lock);
-            break;
-          }
+          p->state = RUNNING;
+          p->ticks += 1;
+          c->proc = p;
+          swtch(&c->context, &p->context);
+          c->proc = 0;
+          release(&p->lock);
+          break;
         }
       }
       release(&p->lock);
     }
   }
+
   #else
   for(;;){
     // Avoid deadlock by ensuring that devices can interrupt.
