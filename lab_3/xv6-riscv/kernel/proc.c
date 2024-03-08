@@ -118,7 +118,7 @@ int alloctid()
 }
 
 static struct proc*
-thread_alloc(void)
+allocthread(void)
 {
   struct proc *temp;
   //Iterate over the proc array to find an unused process slot
@@ -410,7 +410,7 @@ clone(void *stack)
     return -1;
   }
 
-  if ((temp = thread_alloc()) == 0) {
+  if ((temp = allocthread()) == 0) {
     return -1;
   }
 
