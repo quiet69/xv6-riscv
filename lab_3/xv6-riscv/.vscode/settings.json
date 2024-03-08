@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "kalloc.h": "c",
+        "custom.h": "c",
+        "kmem.h": "c",
+        "param.h": "c"
+    }
+}
